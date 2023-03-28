@@ -14,9 +14,9 @@
   }
   
   ul li {
-    padding: 5px;
+    padding: 5px 5px;
     background: #f4f4f4;
-    margin: 5px 0;
+    margin: 5px 5px;
   }
   
   header {
@@ -30,6 +30,14 @@
     width: 500px;
     overflow: auto;
     padding: 3rem 2rem;
+  }
+
+  .delete {
+    float: right;
+  }
+
+  .edit {
+    float: right;
   }
   
   #my-form {
@@ -57,14 +65,15 @@
     border: 1px solid #ccc;
   }
   
-  .btn {
-    padding: 10px 15px;
+  .btn, .delete, .edit {
+    padding: 5px 10px;
     border: 0;
 
     background: #333;
     color: #fff;
     border-radius: 5px;
-    margin: 5px 5px;
+    margin-left: 5px;
+    margin-right: 5px;
   }
   
   .btn:hover {

@@ -1,138 +1,138 @@
-var users = document.getElementById("users");
-var form = document.getElementById("my-form");
+var forms = document.getElementById("my-form");
+var items = document.getElementById("items");
 
-form.addEventListener("submit", addUser);
-users.addEventListener("click", removeItem);
-users.addEventListener("click", editItem);
+forms.addEventListener("submit", addExpense);
+items.addEventListener("click", removeItm);
+items.addEventListener("click", editItm);
 
-async function addUser(e) {
+function addExpense(e) {
   e.preventDefault();
-  var newName = document.getElementById("name").value;
-  console.log(newName);
-  var newEmail = document.getElementById("email").value;
-  console.log(newEmail);
-  let obj = {
-    name: newName,
-    email: newEmail,
-  };
+  var price = document.getElementById("price").value;
+  var category = document.getElementById("category").value;
+  var desc = document.getElementById("desc").value;
   var li = document.createElement("li");
-  li.className = "list-group-item";
-  li.appendChild(document.createTextNode(newName + "-" + newEmail + "-"));
-  var deleteBtn = document.createElement("button");
-
-  // Add classes to del button
-  deleteBtn.className = "btn btn-danger btn-sm float-right delete";
-
-  // Append text node
-  deleteBtn.appendChild(document.createTextNode("delete "));
-
-  li.appendChild(deleteBtn);
-
+  li.appendChild(document.createTextNode(price + "-" + category + "-" + desc));
+  var dlt = document.createElement("button");
+  dlt.className = "delete";
+  li.appendChild(dlt);
+  dlt.appendChild(document.createTextNode("delete"));
   var edit = document.createElement("button");
-
-  // Add classes to del button
-  edit.className = "btn btn-danger btn-sm float-right edit";
-
-  // Append text node
-  edit.appendChild(document.createTextNode("edit "));
-
-  // Append button to li
+  edit.className = "edit";
+  edit.appendChild(document.createTextNode("edit"));
   li.appendChild(edit);
-
-  // Append li to list
-  users.appendChild(li);
-
-  console.log(obj);
-
-  await axios
-    .post("http://localhost:3000/", obj, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((res) => {
-      showUsers();
-    })
-    .catch((err) => {
-      console.log("something and i dont know what");
-    });
+  items.appendChild(li);
+  let obj = {
+    p: price,
+    c: category,
+    d: desc,
+  };
+  axios
+    .post("http://localhost:3000/", obj)
+    .catch((err) => console.error(err.message));
 }
-async function removeItem(e) {
-  if (e.target.classList.contains("delete")) {
-    if (confirm("Are you sure you want to remove this user?")) {
-      var li = e.target.parentElement;
-      var ul = li.parentElement;
-      var name = li.textContent.trim().split("-")[0];
+let del;
 
-      // remove the list item from the ul element
-      ul.removeChild(li);
-      console.log(name);
-      // remove the corresponding object from the local storage using the name value as the key
-      await axios
-        .delete(`http://localhost:3000/${name}`)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+window.addEventListener("DOMContentLoaded", () => {
+  async function display() {
+    setTimeout(() => {
+      axios.get("http://localhost:3000/").then((res) => {
+        const data = res.data;
+        let p, c, d;
+        for (let i = 0; i < data.length; i++) {
+          p = data[i].price;
+          c = data[i].category;
+          d = data[i].description;
+          var li = document.createElement("li");
+          li.appendChild(document.createTextNode(p + "-" + c + "-" + d));
+          var dlt = document.createElement("button");
+          dlt.className = "delete";
+          li.appendChild(dlt);
+          dlt.appendChild(document.createTextNode("delete"));
+          var edit = document.createElement("button");
+          edit.className = "edit";
+          edit.appendChild(document.createTextNode("edit"));
+          li.appendChild(edit);
+          items.appendChild(li);
+        }
+        console.log(res);
+      }, 1000);
+    });
+  }
+  async function main() {
+    await display();
+  }
+  main();
+});
+
+async function removeItm(e) {
+  if (e.target.classList.contains("delete")) {
+    var li = e.target.parentElement;
+    var ul = li.parentElement;
+    ul.removeChild(li);
+    var desc = li.firstChild.textContent.trim().split("-")[2];
+    var id;
+    await axios
+      .get("http://localhost:3000/del", {
+        params: {
+          desc: desc,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        id = res.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    await axios.delete("http://localhost:3000/" , {
+      params: {
+        id : id,
+      }
+    }).then(res => {
+      console.log(res);
+    }).catch(err => {
+      console.log(err);
+    })
   }
 }
-function editItem(e) {
+
+async function editItm(e) {
   if (e.target.classList.contains("edit")) {
     var li = e.target.parentElement;
     var ul = li.parentElement;
-    var form = ul.previousElementSibling;
-    console.log(form);
-    var name = li.textContent.trim().split(" ")[0];
-    var editName = document.getElementById("name");
-    var editEmail = document.getElementById("email");
-    editName.value = li.textContent.trim().split(" ")[0];
-    editEmail.value = li.textContent.trim().split(" ")[1];
-
-    // remove the list item from the ul element
+    console.log(li);
+    var toEdit = li.firstChild.textContent.trim().split("-");
+    var price = document.getElementById("price");
+    var cat = document.getElementById("category");
+    var desc = document.getElementById("desc");
+    price.value = toEdit[0];
+    cat.value = toEdit[1];
+    desc.value = toEdit[2];
     ul.removeChild(li);
-  }
-  // remove the corresponding object from the local storage using the name value as the key
-}
+    var desc = li.firstChild.textContent.trim().split("-")[2];
+    var id;
+    await axios
+      .get("http://localhost:3000/del", {
+        params: {
+          desc: desc,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        id = res.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
-async function showUsers() {
-  try {
-    const response = await axios.get("http://localhost:3000/");
-    const data = response.data;
-    for (const user of data) {
-      var newName = user.name;
-      var newEmail = user.email;
-      var li = document.createElement("li");
-      li.className = "list-group-item";
-      li.appendChild(document.createTextNode(newName + "-" + newEmail + "-"));
-      var deleteBtn = document.createElement("button");
-
-      // Add classes to del button
-      deleteBtn.className = "btn btn-danger btn-sm float-right delete";
-
-      // Append text node
-      deleteBtn.appendChild(document.createTextNode("delete "));
-
-      li.appendChild(deleteBtn);
-
-      var edit = document.createElement("button");
-
-      // Add classes to del button
-      edit.className = "btn btn-danger btn-sm float-right edit";
-
-      // Append text node
-      edit.appendChild(document.createTextNode("edit "));
-
-      // Append button to li
-      li.appendChild(edit);
-
-      // Append li to list
-      users.appendChild(li);
-    }
-  } catch (error) {
-    console.error(error);
+      await axios.delete("http://localhost:3000/" , {
+        params: {
+          id : id,
+        }
+      }).then(res => {
+        console.log(res);
+      }).catch(err => {
+        console.log(err);
+      })
   }
 }
-showUsers();

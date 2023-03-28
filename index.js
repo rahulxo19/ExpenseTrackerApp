@@ -1,7 +1,6 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const path = require('path')
 
 const sequelize = require('./util/database')
 const form = require('./routes/form')
@@ -16,6 +15,6 @@ app.use(bodyParser.json());
 
 app.use('/', form)
 
-sequelize.sync().then(result => {
+sequelize.sync().then(() => {
   app.listen(3000);
 }).catch(err => console.log(err))
