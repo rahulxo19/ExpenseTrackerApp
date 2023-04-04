@@ -6,7 +6,10 @@ const signup = require('../controllers/users')
 
 const router = express.Router();
 
+router.post('/login', signup.login)
+
 router.post('/', signup.postUser);
+
 
 // router.get('/del', form.getDetail);
 

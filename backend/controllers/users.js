@@ -19,3 +19,28 @@ exports.postUser = async (req, res) => {
     res.status(500).json({ error: "error h yaha bhi" });
   }
 };
+
+exports.login = async (req, res) => {
+  const { email, pswd } = req.body;
+  const exist = await User.findOne({
+    where: {
+      email: `${email}`
+    },
+  });
+  if (exist) {
+    const pass = await User.findOne({
+      where: {
+        pswd: `${pswd}`
+      }
+    })
+    if(pass){
+      res.status(201).json({ message : "correct password"})
+    }
+    else {
+      res.status(401).json({ error : " wrong password"})
+    }
+  }
+  else {
+    res.status(400).json({ error: "User does not exist"})
+  }
+}
