@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt')
 const User = require("../model/signup");
 
 exports.postUser = async (req, res) => {
@@ -11,10 +12,13 @@ exports.postUser = async (req, res) => {
   if (exist) {
     res.status(400).json({ error: " User already exists" });
   }
-
+  
   try {
-    await User.create({ name, email, pswd });
-    res.status(201).json({ message: " User created Successfully" });
+    bcrypt.hash(pswd, 10, async (err,hash)=> {
+      await User.create({ name: name, email: email, pswd: hash });
+      res.status(201).json({ message: " User created Successfully" });
+  
+    })
   } catch (err) {
     res.status(500).json({ error: "error h yaha bhi" });
   }
@@ -22,25 +26,26 @@ exports.postUser = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, pswd } = req.body;
-  const exist = await User.findOne({
+  const user = await User.findOne({
     where: {
-      email: `${email}`
-    },
+      email: email
+    }
   });
-  if (exist) {
-    const pass = await User.findOne({
-      where: {
-        pswd: `${pswd}`
-      }
-    })
-    if(pass){
-      res.status(201).json({ message : "correct password"})
-    }
-    else {
-      res.status(401).json({ error : " wrong password"})
-    }
+  if (!user) {
+    res.status(400).json({ error: "User does not exist" });
+    return;
   }
-  else {
-    res.status(400).json({ error: "User does not exist"})
-  }
-}
+
+  bcrypt.compare(pswd, user.pswd, (err, result) => {
+    if (err) {
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    if (result) {
+      res.status(201).json({ message: "Correct password" });
+    } else {
+      res.status(401).json({ error: "Wrong password" });
+    }
+  });
+};
+
