@@ -1,6 +1,6 @@
 const express = require('express')
 
-// const form = require('../controllers/form')
+const form = require('../controllers/form')
 
 const signup = require('../controllers/users')
 
@@ -11,12 +11,12 @@ router.post('/login', signup.login)
 router.post('/', signup.postUser);
 
 
-// router.get('/del', form.getDetail);
+router.get('/expense', form.getDetail);
 
-// router.get('/', form.getDetails);
+router.get('/expenses', form.getDetails);
 
-// router.post('/', form.postDetail);
+router.post('/expenses', form.postDetail);
 
-// router.delete('/', form.delExpense);
+router.delete('/expenses', form.delExpense);
 
 module.exports = router;

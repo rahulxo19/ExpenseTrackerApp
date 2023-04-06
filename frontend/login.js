@@ -21,14 +21,13 @@ async function loginHandler(e) {
     console.log(res);
     if (res.status == 201) {
       alert("User Login Successful");
-      
+      // Redirect to expense.html page
+      window.location.href = "./expense.html";
     } else {
       err.innerHTML = res.data.error;
-      
     }
   } catch (error) {
     console.log(error);
     err.innerHTML = error.response.data.error;
-    
   }
 }
