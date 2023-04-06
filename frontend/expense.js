@@ -29,7 +29,6 @@ async function addExpense(e) {
   };
   try {
     const res = await axios.post("http://localhost:3000/expenses", obj);
-    console.log(res);
     display();
   } catch (err) {
     console.error(err.message);
@@ -40,7 +39,8 @@ let del;
 
 async function display() {
   try {
-    const res = await axios.get("http://localhost:3000/expenses");
+    const token = localStorage.getItem('token');
+    const res = await axios.get("http://localhost:3000/expenses", { headers : { "Auth" : token }});
     const data = res.data;
     let p, c, d;
     var ttl = 0;
@@ -86,7 +86,6 @@ async function removeItm(e) {
           desc: desc,
         },
       });
-      console.log(res.data);
       id = res.data;
     } catch (err) {
       console.log(err);
@@ -97,7 +96,6 @@ async function removeItm(e) {
           id: id,
         },
       });
-      console.log(res);
       await display();
     } catch (err) {
       console.log(err);
@@ -126,7 +124,6 @@ async function editItm(e) {
           desc: desc,
         },
       });
-      console.log(response.data);
       id = response.data;
 
       const delResponse = await axios.delete("http://localhost:3000/expenses" , {
@@ -134,7 +131,6 @@ async function editItm(e) {
           id : id,
         }
       });
-      console.log(delResponse.data);
       await display();
     } catch (error) {
       console.log(error);

@@ -18,6 +18,7 @@ async function SignUp(e) {
   await axios.post('http://localhost:3000/', obj)
   .then(res => {
     console.log(res);
+    window.location.href = "./login.html";
   })
   .catch(err => {
     console.log('error aya h')

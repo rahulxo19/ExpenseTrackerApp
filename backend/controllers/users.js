@@ -1,5 +1,10 @@
 const bcrypt = require('bcrypt')
 const User = require("../model/signup");
+const jwt = require("jsonwebtoken")
+
+function accessToken(id, username){
+return jwt.sign({ userId : id, name : username},"d037087c3bb218554282" )
+}
 
 exports.postUser = async (req, res) => {
   const { name, email, pswd } = req.body;
@@ -42,7 +47,7 @@ exports.login = async (req, res) => {
       return;
     }
     if (result) {
-      res.status(201).json({ message: "Correct password" });
+      res.status(201).json({ message: "Correct password", token : accessToken(user.id, user.name) });
     } else {
       res.status(401).json({ error: "Wrong password" });
     }

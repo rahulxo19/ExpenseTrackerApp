@@ -4,7 +4,11 @@ const bodyParser = require('body-parser')
 
 const sequelize = require('./util/database')
 const form = require('./routes/form')
+const User = require('./model/signup')
+const expenses = require('./model/form')
 
+User.hasMany(expenses)
+expenses.belongsTo(User);
 
 const app = express();
 

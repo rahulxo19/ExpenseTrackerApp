@@ -18,8 +18,8 @@ async function loginHandler(e) {
 
   try {
     const res = await axios.post("http://localhost:3000/login", obj);
-    console.log(res);
     if (res.status == 201) {
+      localStorage.setItem('token',res.data.token);
       alert("User Login Successful");
       // Redirect to expense.html page
       window.location.href = "./expense.html";

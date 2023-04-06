@@ -1,7 +1,7 @@
 const Expenses = require('../model/form')
 
 exports.getDetails = async(req, res) => {
-  const rows = await Expenses.findAll();
+  const rows = await Expenses.findAll({ where : req.user.userId });
   res.send(rows);
 }
 
@@ -18,7 +18,6 @@ exports.postDetail = async(req, res) => {
 
 exports.getDetail = async(req, res) => {
   const desc = req.query.desc;
-  console.log(desc);
   await Expenses.findOne({
     where: {
       description: `${desc}`
@@ -36,7 +35,6 @@ exports.getDetail = async(req, res) => {
 
 exports.delExpense = async(req, res) => {
   const id = req.query.id;
-  console.log(id);
   await Expenses.destroy({
     where: {
       id: id
