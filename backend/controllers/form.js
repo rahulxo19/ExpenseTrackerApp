@@ -1,19 +1,33 @@
 const Expenses = require('../model/form')
 
-exports.getDetails = async(req, res) => {
-  const rows = await Expenses.findAll({ where : req.user.userId });
-  res.send(rows);
+exports.getDetails = async (req, res) => {
+  try {
+    const rows = await Expenses.findAll({
+      where: {
+        userId: req.user ? req.user.id : null
+      }
+    });
+    res.send(rows);
+  } catch (err) {
+    // Handle any errors that occur during database query
+    console.log(err);
+    res.json({ message: "Error retrieving expenses" });
+  }
 }
+
 
 exports.postDetail = async(req, res) => {
   const {p, c, d} = req.body;
-  await Expenses.create({
+  console.log(req.user);
+  await req.user.createExpense({
     price : p,
     category : c,
-    description : d
+    description : d,
+    userId : req.user.id
   }).catch(err => {
     console.log(err);
   })
+  console.log(req.user.id);
 }
 
 exports.getDetail = async(req, res) => {

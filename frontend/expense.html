@@ -17,11 +17,11 @@
             <div class="msg"></div>
             <div>
                 <label for="price">price</label>
-                <input type="number" id="price">
+                <input type="number" id="price" required>
             </div>
             <div>
 				<label for="desc">description</label>
-                <input type="text" id="desc">
+                <input type="text" id="desc" required>
             </div>
 			<div>
 				<label for="category">category</label>
@@ -34,6 +34,10 @@
 			</div>
             <div>
                 <button class="btn" type="submit" id="submit">Submit</button>
+            </div>
+            <div>
+                <button id="rzr-button1">Buy Membership</button>
+                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
             </div>
         </form>
         <ul id="items">Items</ul>

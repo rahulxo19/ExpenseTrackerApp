@@ -17,7 +17,8 @@ const User = sequelize.define('users',{
     },
     pswd: {
         type: Sequelize.STRING
-    }
+    },
+    ispremiumuser : Sequelize.BOOLEAN
 })
 
 module.exports = User;

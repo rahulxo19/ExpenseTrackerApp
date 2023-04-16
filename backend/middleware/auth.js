@@ -1,15 +1,20 @@
-const jwt = require("jsonwebtoken")
-const User = require("../model/signup")
+const jwt = require("jsonwebtoken");
+const User = require("../model/signup");
 
 exports.Auth = async (req, res, next) => {
-    try{
-        const token = req.header("Auth");
-        const user = jwt.verify(token, "d037087c3bb218554282")
-        req.user = user;
-        next();
-    } catch(err) {
-        console.log("auth error");
-        res.json({ message: ' error in auth '})
-    }
-    
-}
+  try {
+    const token = req.header("Auth");
+    const userObj = jwt.verify(token, "d037087c3bb218554282");
+    console.log(userObj.userId);
+    const user = await User.findOne({
+        where : {
+            id : `${userObj.userId}`
+        }
+    })
+    req.user = user;
+    next();
+  } catch (err) {
+    console.log(err.message);
+    res.json({ message: " error in auth " });
+  }
+};

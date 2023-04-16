@@ -2,11 +2,40 @@ var forms = document.getElementById("my-form");
 var items = document.getElementById("items");
 var total = document.getElementById("Total")
 
-forms.addEventListener("submit", addExpense);
-items.addEventListener("click", removeItm);
-items.addEventListener("click", editItm);
+document.getElementById('rzr-button1').onclick = async function (e) {
+  e.preventDefault();
+  const token = localStorage.getItem('token');
+  try {
+    const response = await axios.get('http://localhost:3000/premium', { headers : { "Auth" : token}})
+    console.log(response);
+    
+    var options = {
+      "key" : response.data.key_id,
+      "order_id" : response.data.order.id,
+      "handler" : async function (response) {
+        await axios.post('http://localhost:3000/updatepremium', {
+          order_id : options.order_id,
+          payment_id : response.razorpay_payment_id
+       }, { headers: { "Auth" : token }})
+       alert('You are a premium user now')
+      }
+    }
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
 
-async function addExpense(e) {
+    rzp1.on('payment.failed', () => {
+      console.log("payment failed");
+      alert('payment failed')
+    })
+  }
+  catch (err) {
+    console.log(err.message);
+  }
+
+}
+
+document.getElementById('submit').onclick =async function addExpense(e) {
   e.preventDefault();
   var price = document.getElementById("price").value;
   var category = document.getElementById("category").value;
@@ -28,7 +57,8 @@ async function addExpense(e) {
     d: desc,
   };
   try {
-    const res = await axios.post("http://localhost:3000/expenses", obj);
+    const token = localStorage.getItem('token');
+    const res = await axios.post("http://localhost:3000/expenses", obj, { headers : { "Auth" : token }});
     display();
   } catch (err) {
     console.error(err.message);
