@@ -65,7 +65,7 @@
     border: 1px solid #ccc;
   }
   
-  .btn, .delete, .edit {
+  .btn {
     padding: 5px 10px;
     border: 0;
 

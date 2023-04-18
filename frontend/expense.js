@@ -1,81 +1,114 @@
 var forms = document.getElementById("my-form");
 var items = document.getElementById("items");
-var total = document.getElementById("Total")
+var total = document.getElementById("Total");
+var board = document.getElementById("board");
+var leader = document.getElementById("leader");
+var leaderboard = document.getElementById("leaderboard");
 
-document.getElementById('rzr-button1').onclick = async function (e) {
-  e.preventDefault();
-  const token = localStorage.getItem('token');
-  try {
-    const response = await axios.get('http://localhost:3000/premium', { headers : { "Auth" : token}})
-    console.log(response);
+leaderboard.addEventListener("click", async function (e) {
+  if(e.target.classList.contains('lbd')){
+    leader.style.display = 'block';
     
+    const token = localStorage.getItem("token");
+    const res = await axios.get('http://localhost:3000/premium/leaderboard',{
+      headers: { Auth: token },
+    })
+    for (let j = 0; j < res.data.length; j++) {
+      var user = document.createElement('li');
+      user.innerHTML = `name : ${res.data[j].name}, TotalExpense : ${res.data[j].totalExpense}`;
+      board.appendChild(user);
+    }    
+    
+    console.log(res);
+  }
+})
+
+document.getElementById("rzr-button1").onclick = async function (e) {
+  e.preventDefault();
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get("http://localhost:3000/premium", {
+      headers: { Auth: token },
+    });
+    console.log(response);
+
     var options = {
-      "key" : response.data.key_id,
-      "order_id" : response.data.order.id,
-      "handler" : async function (response) {
-        await axios.post('http://localhost:3000/updatepremium', {
-          order_id : options.order_id,
-          payment_id : response.razorpay_payment_id
-       }, { headers: { "Auth" : token }})
-       alert('You are a premium user now')
-      }
-    }
+      key: response.data.key_id,
+      order_id: response.data.order.id,
+      handler: async function (response) {
+        const res = await axios.post(
+          "http://localhost:3000/updatepremium",
+          {
+            order_id: options.order_id,
+            payment_id: response.razorpay_payment_id,
+          },
+          { headers: { Auth: token } }
+        );
+        if (res) {
+          alert("You are now a premium User");
+        }
+      },
+    };
     const rzp1 = new Razorpay(options);
     rzp1.open();
     e.preventDefault();
 
-    rzp1.on('payment.failed', () => {
+    rzp1.on("payment.failed", () => {
       console.log("payment failed");
-      alert('payment failed')
-    })
-  }
-  catch (err) {
+      alert("payment failed");
+    });
+  } catch (err) {
     console.log(err.message);
   }
+};
 
-}
-
-document.getElementById('submit').onclick =async function addExpense(e) {
+forms.addEventListener("submit", async function (e) {
   e.preventDefault();
   var price = document.getElementById("price").value;
   var category = document.getElementById("category").value;
   var desc = document.getElementById("desc").value;
-  var li = document.createElement("li");
-  li.appendChild(document.createTextNode(price + "-" + category + "-" + desc));
-  var dlt = document.createElement("button");
-  dlt.className = "delete";
-  li.appendChild(dlt);
-  dlt.appendChild(document.createTextNode("delete"));
-  var edit = document.createElement("button");
-  edit.className = "edit";
-  edit.appendChild(document.createTextNode("edit"));
-  li.appendChild(edit);
-  items.appendChild(li);
   let obj = {
     p: price,
     c: category,
     d: desc,
   };
   try {
-    const token = localStorage.getItem('token');
-    const res = await axios.post("http://localhost:3000/expenses", obj, { headers : { "Auth" : token }});
-    display();
+    const token = localStorage.getItem("token");
+    await axios.post("http://localhost:3000/expenses", obj, {
+      headers: { Auth: token },
+    }).then(res => {
+      console.log(res);
+      display();
+    })
   } catch (err) {
     console.error(err.message);
   }
-}
+});
+
 
 let del;
 
 async function display() {
   try {
-    const token = localStorage.getItem('token');
-    const res = await axios.get("http://localhost:3000/expenses", { headers : { "Auth" : token }});
+    const token = localStorage.getItem("token");
+    const res = await axios.get("http://localhost:3000/expenses", {
+      headers: { Auth: token },
+    });
     const data = res.data;
     let p, c, d;
     var ttl = 0;
+    const prem = await axios.get("http://localhost:3000/expense/prem", {
+      headers: { Auth: token },
+    });
+    if (prem.data) {
+      const premium = document.getElementById("rzr-button");
+      premium.innerHTML = "You are a Premium Member";
+    }
 
-    items.innerHTML = "";
+    while (items.firstChild) {
+      items.removeChild(items.firstChild);
+    }
+
     for (let i = 0; i < data.length; i++) {
       p = data[i].price;
       c = data[i].category;
@@ -83,28 +116,33 @@ async function display() {
       ttl = ttl + p;
       var li = document.createElement("li");
       li.appendChild(document.createTextNode(p + "-" + c + "-" + d));
+
       var dlt = document.createElement("button");
-      dlt.className = "delete";
+      dlt.className = "delete btn";
+      dlt.textContent = "delete";
       li.appendChild(dlt);
-      dlt.appendChild(document.createTextNode("delete"));
+
       var edit = document.createElement("button");
-      edit.className = "edit";
-      edit.appendChild(document.createTextNode("edit"));
+      edit.className = "edit btn";
+      edit.textContent = "edit";
       li.appendChild(edit);
       items.appendChild(li);
+
     }
-    total.textContent = "Total Price of items :" + ttl ;
+
+    total.textContent = "Total Price of items: " + ttl;
   } catch (err) {
     console.error(err.message);
   }
 }
 
-window.addEventListener("load", () => {
-  display();
-})
+window.addEventListener("load", async () => {
+  await display();
+});
 
-async function removeItm(e) {
+items.addEventListener("click", async function (e) {
   if (e.target.classList.contains("delete")) {
+    console.log("delete btn pressed");
     var li = e.target.parentElement;
     var ul = li.parentElement;
     ul.removeChild(li);
@@ -125,15 +163,17 @@ async function removeItm(e) {
         params: {
           id: id,
         },
-      });
-      await display();
+      }).then(() => {
+        display();
+      })
     } catch (err) {
       console.log(err);
     }
   }
-}
+});
 
-async function editItm(e) {
+
+items.addEventListener("click", async function (e) {
   if (e.target.classList.contains("edit")) {
     try {
       var li = e.target.parentElement;
@@ -156,14 +196,15 @@ async function editItm(e) {
       });
       id = response.data;
 
-      const delResponse = await axios.delete("http://localhost:3000/expenses" , {
+      const delResponse = await axios.delete("http://localhost:3000/expenses", {
         params: {
-          id : id,
-        }
-      });
-      await display();
+          id: id,
+        },
+      }).then(() => {
+        display();
+      })
     } catch (error) {
       console.log(error);
     }
   }
-}
+});

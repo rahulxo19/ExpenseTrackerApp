@@ -34,14 +34,18 @@
 			</div>
             <div>
                 <button class="btn" type="submit" id="submit">Submit</button>
+                <button class="btn lbd" id="leaderboard">Leaderboard</button>
             </div>
-            <div>
+            <div id="rzr-button">
                 <button id="rzr-button1">Buy Membership</button>
                 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
             </div>
         </form>
-        <ul id="items">Items</ul>
+        <h2>Items</h2>
+        <ul id="items"></ul>
         <div id="Total"></div>
+        <h2 id="leader" style="display: none;">Leaderboard</h2>
+        <ul id="board"></ul>
     </div>
 	<script src="expense.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.3/axios.js" integrity="sha512-uap0bTaa/bPjLtLVuiWS+qak4SJrOPcdfVzUdrrE7LgvtMlkV6DeiBH7Rgt7B+74M3crOr3QdTX3gCTMMRVzZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

@@ -1,4 +1,5 @@
 const Expenses = require('../model/form')
+const User = require('../model/signup')
 
 exports.getDetails = async (req, res) => {
   try {
@@ -15,16 +16,28 @@ exports.getDetails = async (req, res) => {
   }
 }
 
+exports.getMemb = async(req, res) => {
+  try {
+    console.log(req.user.id + " heelo");
+    const prem = await User.findOne({where : { id : req.user.id }})
+    res.send(prem.ispremiumuser);
+  } catch(err) {
+    console.log(err.message);
+  }
+}
 
 exports.postDetail = async(req, res) => {
   const {p, c, d} = req.body;
-  console.log(req.user);
   await req.user.createExpense({
     price : p,
     category : c,
     description : d,
     userId : req.user.id
-  }).catch(err => {
+  })
+  .then(() => {
+    res.send("this is post submit")
+  })
+  .catch(err => {
     console.log(err);
   })
   console.log(req.user.id);

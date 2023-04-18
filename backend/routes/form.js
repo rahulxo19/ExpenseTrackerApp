@@ -14,11 +14,15 @@ router.post('/login', signup.login)
 
 router.post('/', signup.postUser);
 
+router.get('/premium/leaderboard', authentication.Auth, purchase.leaderboard)
+
 router.get('/premium', authentication.Auth, purchase.purchaseMembership)
 
 router.post('/updatepremium', authentication.Auth, purchase.updateMembership)
 
 router.get('/expense', form.getDetail);
+
+router.get('/expense/prem', authentication.Auth, form.getMemb);
 
 router.get('/expenses', authentication.Auth, form.getDetails);
 

@@ -8,7 +8,6 @@ return jwt.sign({ userId : id, name : username},"d037087c3bb218554282" )
 
 exports.postUser = async (req, res) => {
   const { name, email, pswd } = req.body;
-  console.log(name);
   const exist = await User.findOne({
     where: {
       name: `${name}`,
@@ -21,7 +20,7 @@ exports.postUser = async (req, res) => {
   try {
     bcrypt.hash(pswd, 10, async (err,hash)=> {
       await User.create({ name: name, email: email, pswd: hash });
-      res.status(201).json({ message: " User created Successfully" });
+      res.status(201).json({ message: " login successful" });
   
     })
   } catch (err) {
