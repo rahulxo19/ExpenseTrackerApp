@@ -13,6 +13,7 @@ leaderboard.addEventListener("click", async function (e) {
     const res = await axios.get('http://localhost:3000/premium/leaderboard',{
       headers: { Auth: token },
     })
+    board.innerHTML = ""
     for (let j = 0; j < res.data.length; j++) {
       var user = document.createElement('li');
       user.innerHTML = `name : ${res.data[j].name}, TotalExpense : ${res.data[j].totalExpense}`;

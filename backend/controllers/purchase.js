@@ -48,28 +48,50 @@ try {
 
 module.exports.leaderboard = async (req, res) => {
     try {
-        const users = await User.findAll();
-        const expenses = await Expense.findAll();
-        const leaderboard = [];
-
-        for (let i = 0; i < users.length; i++) {
-            const user = users[i];
-            const userExpenses = expenses.filter(expense => expense.userId === user.id )
-            let totalExpense = 0;
-
-            console.log(userExpenses);
-            for (let j = 0; j < userExpenses.length; j++) {
-                totalExpense += userExpenses[j].dataValues.price;
-            }
-
-            leaderboard.push({
-                id: user.id,
-                name: user.name,
-                totalExpense: totalExpense
-            });
-        }
-        res.status(200).json(leaderboard);
+      const leaderboard = await User.findAll({
+        attributes: ['id', 'name', [sequelize.fn('SUM', sequelize.col('expenses.price')), 'totalExpense']],
+        include: [{ model: Expense, as: 'expenses', attributes: [] }],
+        group: ['User.id'],
+        order: [[sequelize.literal('totalExpense'), 'DESC']]
+      });
+  
+      res.status(200).json(leaderboard);
     } catch (err) {
-        console.log(err.message);
+      console.log(err.message);
     }
-}
+  };
+  
+
+// module.exports.leaderboard = async (req, res) => {
+//     try {
+//       const users = await User.findAll();
+//       const expenses = await Expense.findAll();
+  
+//       const userExpensesMap = expenses.reduce((acc, expense) => {
+//         const userId = expense.userId;
+//         if (!acc[userId]) {
+//           acc[userId] = 0;
+//         }
+//         acc[userId] += expense.price;
+//         return acc;
+//       }, {});
+  
+//       const leaderboard = users.map(user => {
+//         const totalExpense = userExpensesMap[user.id] || 0;
+//         return {
+//           id: user.id,
+//           name: user.name,
+//           totalExpense: totalExpense
+//         };
+//       });
+  
+//       leaderboard.sort((a, b) => {
+//         return b.totalExpense - a.totalExpense;
+//       });
+  
+//       res.status(200).json(leaderboard);
+//     } catch (err) {
+//       console.log(err.message);
+//     }
+//   }
+  
