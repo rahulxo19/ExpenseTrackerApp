@@ -1,4 +1,5 @@
 const Razorpay = require('razorpay');
+const sequelize = require('sequelize');
 const Order = require('../model/orders');
 const Expense = require('../model/form');
 const User = require('../model/signup');
@@ -49,9 +50,9 @@ try {
 module.exports.leaderboard = async (req, res) => {
     try {
       const leaderboard = await User.findAll({
-        attributes: ['id', 'name', [sequelize.fn('SUM', sequelize.col('expenses.price')), 'totalExpense']],
+        attributes: ['id', 'name',[sequelize.fn("COALESCE", sequelize.fn('SUM', sequelize.col('expenses.price')), 0), 'totalExpense']],
         include: [{ model: Expense, as: 'expenses', attributes: [] }],
-        group: ['User.id'],
+        group: ['users.id'],
         order: [[sequelize.literal('totalExpense'), 'DESC']]
       });
   

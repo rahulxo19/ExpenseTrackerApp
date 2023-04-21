@@ -4,6 +4,7 @@ var total = document.getElementById("Total");
 var board = document.getElementById("board");
 var leader = document.getElementById("leader");
 var leaderboard = document.getElementById("leaderboard");
+var submit = document.getElementById("submit")
 
 leaderboard.addEventListener("click", async function (e) {
   if(e.target.classList.contains('lbd')){
@@ -63,7 +64,7 @@ document.getElementById("rzr-button1").onclick = async function (e) {
   }
 };
 
-forms.addEventListener("submit", async function (e) {
+submit.addEventListener("click", async function (e) {
   e.preventDefault();
   var price = document.getElementById("price").value;
   var category = document.getElementById("category").value;
