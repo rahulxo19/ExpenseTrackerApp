@@ -6,7 +6,10 @@ const signup = require('../controllers/users')
 
 const purchase = require('../controllers/purchase')
 
+const password = require('../controllers/forgotPassword')
+
 const authentication = require('../middleware/auth')
+
 
 const router = express.Router();
 
@@ -21,6 +24,8 @@ router.get('/premium', authentication.Auth, purchase.purchaseMembership)
 router.post('/updatepremium', authentication.Auth, purchase.updateMembership)
 
 router.get('/expense', form.getDetail);
+
+router.post('/password/forgotpassword', password.forgotPassword);
 
 router.get('/expense/prem', authentication.Auth, form.getMemb);
 
