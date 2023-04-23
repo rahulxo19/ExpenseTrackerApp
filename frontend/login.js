@@ -17,18 +17,16 @@ async function forgotPassword(e) {
   e.preventDefault();
 
   const email = document.getElementById("email1").value;
-  console.log(email);
 
   const obj = {
     email: email,
   };
 
   try {
-    const res = await axios.post(
+    await axios.post(
       "http://localhost:3000/password/forgotpassword",
       obj
     );
-    console.log(res);
   } catch (err) {
     console.log(err);
   }

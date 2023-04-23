@@ -27,6 +27,10 @@ router.get('/expense', form.getDetail);
 
 router.post('/password/forgotpassword', password.forgotPassword);
 
+router.get('/password/resetpassword/:id', password.resetpassword)
+
+router.get('/password/updatepassword/:resetpasswordid', password.updatepassword)
+
 router.get('/expense/prem', authentication.Auth, form.getMemb);
 
 router.get('/expenses', authentication.Auth, form.getDetails);

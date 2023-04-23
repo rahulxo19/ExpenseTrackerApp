@@ -8,12 +8,16 @@ const form = require('./routes/form')
 const User = require('./model/signup')
 const Expenses = require('./model/form')
 const Order = require('./model/orders')
+const forgotpassword = require('./model/forgotpassword')
 
 User.hasMany(Order)
 Order.belongsTo(User);
 
 User.hasMany(Expenses)
 Expenses.belongsTo(User);
+
+User.hasMany(forgotpassword)
+forgotpassword.belongsTo(User);
 
 const app = express();
 
