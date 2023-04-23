@@ -5,12 +5,34 @@ var board = document.getElementById("board");
 var leader = document.getElementById("leader");
 var leaderboard = document.getElementById("leaderboard");
 var submit = document.getElementById("submit")
+var Download = document.getElementById("download")
+const token = localStorage.getItem("token");
+
+Download.addEventListener("click", download);
+function download(){
+  axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
+  .then((response) => {
+      if(response.status === 201){
+          //the bcakend is essentially sending a download link
+          //  which if we open in browser, the file would download
+          var a = document.createElement("a");
+          a.href = response.data.fileUrl;
+          a.download = 'myexpense.csv';
+          a.click();
+      } else {
+          throw new Error(response.data.message)
+      }
+
+  })
+  .catch((err) => {
+      showError(err)
+  });
+}
 
 leaderboard.addEventListener("click", async function (e) {
   if(e.target.classList.contains('lbd')){
     leader.style.display = 'block';
     
-    const token = localStorage.getItem("token");
     const res = await axios.get('http://localhost:3000/premium/leaderboard',{
       headers: { Auth: token },
     })
