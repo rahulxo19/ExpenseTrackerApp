@@ -25,6 +25,8 @@ router.post('/updatepremium', authentication.Auth, purchase.updateMembership)
 
 router.get('/expense', form.getDetail);
 
+router.get('/user/download', authentication.Auth, form.download);
+
 router.post('/password/forgotpassword', password.forgotPassword);
 
 router.get('/password/resetpassword/:id', password.resetpassword)

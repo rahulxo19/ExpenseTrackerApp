@@ -9,25 +9,25 @@ var Download = document.getElementById("download")
 const token = localStorage.getItem("token");
 
 Download.addEventListener("click", download);
-function download(){
-  axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
-  .then((response) => {
-      if(response.status === 201){
-          //the bcakend is essentially sending a download link
-          //  which if we open in browser, the file would download
-          var a = document.createElement("a");
-          a.href = response.data.fileUrl;
-          a.download = 'myexpense.csv';
-          a.click();
-      } else {
-          throw new Error(response.data.message)
-      }
-
-  })
-  .catch((err) => {
-      showError(err)
-  });
+async function download() {
+  try {
+    const res = await axios.get('http://localhost:3000/user/download', { headers: {"Auth" : token} });
+    if (res.status === 201) {
+      const data = JSON.stringify(res.data);
+      const file = new Blob([data], {type: 'text/plain'});
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'myexpenses.txt';
+      a.click();
+    } else {
+      console.log(res.message);
+    }
+  } catch (err) {
+    console.log(err.message + " in expense.js");
+  }
 }
+
 
 leaderboard.addEventListener("click", async function (e) {
   if(e.target.classList.contains('lbd')){

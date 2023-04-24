@@ -1,6 +1,28 @@
 const Expenses = require('../model/form')
 const User = require('../model/signup')
 
+exports.download = async (req, res) => {
+  try {
+    const prem = await User.findOne({ where : { id : req.user.id }});
+    if (prem.ispremiumuser) {
+      const expenses = await Expenses.findAll({
+        where : {
+          userId : req.user.id
+        }
+      });
+      console.log(JSON.stringify(expenses));
+      res.status(201).send(JSON.stringify(expenses));
+    } else {
+      res.status(401).json({ message : "You are not a premium User"});
+    }
+  } catch (err) {
+    console.log(err.message);
+    res.status(404).json({ message: "Error Detected while Downloading"});
+  }
+};
+
+
+
 exports.getDetails = async (req, res) => {
   try {
     const rows = await Expenses.findAll({
