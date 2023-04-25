@@ -32,6 +32,30 @@
     padding: 3rem 2rem;
   }
 
+  .pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pagination-number,
+  .pagination-button{
+    font-size: 1.1rem;
+    background-color: transparent;
+    border: none;
+    margin: 0.25rem 0.25rem;
+    cursor: pointer;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: .2rem;
+  }
+  .hidden {
+    display: none;
+  }
+  .pagination-number.active {
+    color: #fff;
+    background: #0085b6;
+  }
+
   .delete {
     float: right;
   }

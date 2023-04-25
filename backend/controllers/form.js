@@ -28,7 +28,8 @@ exports.getDetails = async (req, res) => {
     const rows = await Expenses.findAll({
       where: {
         userId: req.user ? req.user.id : null
-      }
+      },
+      order : [["createdAt", "DESC"]]
     });
     res.send(rows);
   } catch (err) {

@@ -4,21 +4,26 @@ var total = document.getElementById("Total");
 var board = document.getElementById("board");
 var leader = document.getElementById("leader");
 var leaderboard = document.getElementById("leaderboard");
-var submit = document.getElementById("submit")
-var Download = document.getElementById("download")
+var submit = document.getElementById("submit");
+var Download = document.getElementById("download");
+const paginationNumbers = document.getElementById("pagination-numbers");
+const nextButton = document.getElementById("next-button");
+const prevButton = document.getElementById("prev-button");
 const token = localStorage.getItem("token");
 
 Download.addEventListener("click", download);
 async function download() {
   try {
-    const res = await axios.get('http://localhost:3000/user/download', { headers: {"Auth" : token} });
+    const res = await axios.get("http://localhost:3000/user/download", {
+      headers: { Auth: token },
+    });
     if (res.status === 201) {
       const data = JSON.stringify(res.data);
-      const file = new Blob([data], {type: 'text/plain'});
+      const file = new Blob([data], { type: "text/plain" });
       const url = URL.createObjectURL(file);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'myexpenses.txt';
+      a.download = "myexpenses.txt";
       a.click();
     } else {
       console.log(res.message);
@@ -28,24 +33,23 @@ async function download() {
   }
 }
 
-
 leaderboard.addEventListener("click", async function (e) {
-  if(e.target.classList.contains('lbd')){
-    leader.style.display = 'block';
-    
-    const res = await axios.get('http://localhost:3000/premium/leaderboard',{
+  if (e.target.classList.contains("lbd")) {
+    leader.style.display = "block";
+
+    const res = await axios.get("http://localhost:3000/premium/leaderboard", {
       headers: { Auth: token },
-    })
-    board.innerHTML = ""
+    });
+    board.innerHTML = "";
     for (let j = 0; j < res.data.length; j++) {
-      var user = document.createElement('li');
+      var user = document.createElement("li");
       user.innerHTML = `name : ${res.data[j].name}, TotalExpense : ${res.data[j].totalExpense}`;
       board.appendChild(user);
-    }    
-    
+    }
+
     console.log(res);
   }
-})
+});
 
 document.getElementById("rzr-button1").onclick = async function (e) {
   e.preventDefault();
@@ -98,27 +102,28 @@ submit.addEventListener("click", async function (e) {
   };
   try {
     const token = localStorage.getItem("token");
-    await axios.post("http://localhost:3000/expenses", obj, {
-      headers: { Auth: token },
-    }).then(res => {
-      console.log(res);
-      display();
-    })
+    await axios
+      .post("http://localhost:3000/expenses", obj, {
+        headers: { Auth: token },
+      })
+      .then((res) => {
+        console.log(res);
+        display();
+      });
   } catch (err) {
     console.error(err.message);
   }
 });
 
-
-let del;
-
 async function display() {
   try {
     const token = localStorage.getItem("token");
     const res = await axios.get("http://localhost:3000/expenses", {
-      headers: { Auth: token },
+      headers: { Auth: token},
     });
     const data = res.data;
+    page = data;
+    console.log(data);
     let p, c, d;
     var ttl = 0;
     const prem = await axios.get("http://localhost:3000/expense/prem", {
@@ -128,6 +133,8 @@ async function display() {
       const premium = document.getElementById("rzr-button");
       premium.innerHTML = "You are a Premium Member";
     }
+
+    
 
     while (items.firstChild) {
       items.removeChild(items.firstChild);
@@ -151,17 +158,86 @@ async function display() {
       edit.textContent = "edit";
       li.appendChild(edit);
       items.appendChild(li);
-
     }
-
     total.textContent = "Total Price of items: " + ttl;
+
+    const paginationLimit = 5;
+    const pageCount = Math.ceil(data.length / paginationLimit);
+    let currentPage;
+
+    const appendPageNumber = (index) => {
+      const pageNumber = document.createElement("button");
+      pageNumber.className = "pagination-number";
+      pageNumber.innerHTML = index;
+      pageNumber.setAttribute("page-index", index);
+      pageNumber.setAttribute("aria-blue", "Page " + index);
+
+      paginationNumbers.appendChild(pageNumber);
+    };
+
+    const getPaginationNumbers = () => {
+      for (let i = 1; i <= pageCount; i++) {
+        appendPageNumber(i);
+      }
+    };
+
+    getPaginationNumbers();
+
+    const handleActivePageNumber = () => {
+      document.querySelectorAll(".pagination-number").forEach((button) => {
+        button.classList.remove("active");
+        
+        const pageIndex = Number(button.getAttribute("page-index"));
+        if (pageIndex == currentPage) {
+          button.classList.add("active");
+        }
+      });
+    };
+
+    const setCurrentPage = (pageNum) => {
+      currentPage = pageNum;
+      
+      handleActivePageNumber();
+      const prevRange = (pageNum - 1) * paginationLimit;
+      console.log(prevRange);
+      const currRange = pageNum * paginationLimit;
+      console.log(currRange);
+      console.log(items.querySelectorAll("li"));
+      items.querySelectorAll("li").forEach((item, index) => {
+        item.classList.add("hidden");
+        if (index >= prevRange && index < currRange) {
+          item.classList.remove("hidden");
+        }
+      });
+    };
+    setCurrentPage(1);
+
+    prevButton.addEventListener("click", () => {
+      setCurrentPage(currentPage - 1);
+    });
+    nextButton.addEventListener("click", () => {
+      setCurrentPage(currentPage + 1);
+    });
+
+    document.querySelectorAll(".pagination-number").forEach((button) => {
+      const pageIndex = Number(button.getAttribute("page-index"));
+  
+      if (pageIndex) {
+        button.addEventListener("click", () => {
+          setCurrentPage(pageIndex);
+        });
+      }
+    });
   } catch (err) {
     console.error(err.message);
   }
 }
 
+let del;
+
 window.addEventListener("load", async () => {
   await display();
+  
 });
 
 items.addEventListener("click", async function (e) {
@@ -183,19 +259,20 @@ items.addEventListener("click", async function (e) {
       console.log(err);
     }
     try {
-      const res = await axios.delete("http://localhost:3000/expenses", {
-        params: {
-          id: id,
-        },
-      }).then(() => {
-        display();
-      })
+      const res = await axios
+        .delete("http://localhost:3000/expenses", {
+          params: {
+            id: id,
+          },
+        })
+        .then(() => {
+          display();
+        });
     } catch (err) {
       console.log(err);
     }
   }
 });
-
 
 items.addEventListener("click", async function (e) {
   if (e.target.classList.contains("edit")) {
@@ -220,13 +297,15 @@ items.addEventListener("click", async function (e) {
       });
       id = response.data;
 
-      const delResponse = await axios.delete("http://localhost:3000/expenses", {
-        params: {
-          id: id,
-        },
-      }).then(() => {
-        display();
-      })
+      const delResponse = await axios
+        .delete("http://localhost:3000/expenses", {
+          params: {
+            id: id,
+          },
+        })
+        .then(() => {
+          display();
+        });
     } catch (error) {
       console.log(error);
     }
