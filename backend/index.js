@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 const fs = require("fs");
+const path = require("path")
 require("dotenv").config();
 
 const sequelize = require("./util/database");

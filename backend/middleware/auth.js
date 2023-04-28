@@ -4,7 +4,7 @@ const User = require("../model/signup");
 exports.Auth = async (req, res, next) => {
   try {
     const token = req.header("Auth");
-    const userObj = await jwt.verify(token, "d037087c3bb218554282");
+    const userObj = jwt.verify(token, "d037087c3bb218554282");
     console.log(userObj.userId);
     const user = await User.findOne({
         where : {
