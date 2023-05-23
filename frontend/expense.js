@@ -119,7 +119,7 @@ async function display() {
   try {
     const token = localStorage.getItem("token");
     const res = await axios.get("http://localhost:3000/expenses", {
-      headers: { Auth: token},
+      headers: { Auth: token },
     });
     const data = res.data;
     page = data;
@@ -133,8 +133,6 @@ async function display() {
       const premium = document.getElementById("rzr-button");
       premium.innerHTML = "You are a Premium Member";
     }
-
-    
 
     while (items.firstChild) {
       items.removeChild(items.firstChild);
@@ -186,7 +184,7 @@ async function display() {
     const handleActivePageNumber = () => {
       document.querySelectorAll(".pagination-number").forEach((button) => {
         button.classList.remove("active");
-        
+
         const pageIndex = Number(button.getAttribute("page-index"));
         if (pageIndex == currentPage) {
           button.classList.add("active");
@@ -196,7 +194,7 @@ async function display() {
 
     const setCurrentPage = (pageNum) => {
       currentPage = pageNum;
-      
+
       handleActivePageNumber();
       const prevRange = (pageNum - 1) * paginationLimit;
       console.log(prevRange);
@@ -221,7 +219,7 @@ async function display() {
 
     document.querySelectorAll(".pagination-number").forEach((button) => {
       const pageIndex = Number(button.getAttribute("page-index"));
-  
+
       if (pageIndex) {
         button.addEventListener("click", () => {
           setCurrentPage(pageIndex);
@@ -237,40 +235,37 @@ let del;
 
 window.addEventListener("load", async () => {
   await display();
-  
 });
 
 items.addEventListener("click", async function (e) {
-  if (e.target.classList.contains("delete")) {
-    console.log("delete btn pressed");
-    var li = e.target.parentElement;
-    var ul = li.parentElement;
-    ul.removeChild(li);
-    var desc = li.firstChild.textContent.trim().split("-")[2];
-    var id;
-    try {
-      const res = await axios.get("http://localhost:3000/expense", {
-        params: {
-          desc: desc,
-        },
-      });
-      id = res.data;
-    } catch (err) {
-      console.log(err);
-    }
-    try {
-      const res = await axios
-        .delete("http://localhost:3000/expenses", {
-          params: {
-            id: id,
-          },
+  try {
+    if (e.target.classList.contains("delete")) {
+      console.log("delete btn pressed");
+      var li = e.target.parentElement;
+      var ul = li.parentElement;
+      ul.removeChild(li);
+      var desc = li.firstChild.textContent.trim().split("-")[2];
+      var id;
+      const response = await axios.get(
+        `http://localhost:3000/expense/${desc}`,
+        {
+          headers: { Auth: token },
+        }
+      );
+      console.log(response.data);
+      id = response.data;
+      console.log(id);
+
+      const delResponse = axios
+        .delete(`http://localhost:3000/expenses/${id}`, {
+          headers: { Auth: token },
         })
         .then(() => {
           display();
         });
-    } catch (err) {
-      console.log(err);
     }
+  } catch (err) {
+    console.log(err);
   }
 });
 
@@ -279,7 +274,6 @@ items.addEventListener("click", async function (e) {
     try {
       var li = e.target.parentElement;
       var ul = li.parentElement;
-      console.log(li);
       var toEdit = li.firstChild.textContent.trim().split("-");
       var price = document.getElementById("price");
       var cat = document.getElementById("category");
@@ -290,24 +284,34 @@ items.addEventListener("click", async function (e) {
       ul.removeChild(li);
       var desc = li.firstChild.textContent.trim().split("-")[2];
       var id;
-      const response = await axios.get("http://localhost:3000/expense", {
-        params: {
-          desc: desc,
-        },
-      });
+      const response = await axios.get(
+        `http://localhost:3000/expense/${desc}`,
+        {
+          headers: { Auth: token },
+        }
+      );
+      console.log(response.data);
       id = response.data;
+      console.log(id);
 
-      const delResponse = await axios
-        .delete("http://localhost:3000/expenses", {
-          params: {
-            id: id,
-          },
+      const delResponse = axios
+        .delete(`http://localhost:3000/expenses/${id}`, {
+          headers: { Auth: token },
         })
         .then(() => {
           display();
         });
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   }
 });
+
+document.querySelector("#logout").onclick = () => {
+  localStorage.removeItem("token");
+  window.location.href = "./login.html";
+};
+
+let arr = [1, 2, 3];
+
+arr.forEach((element) => console.log(element));
