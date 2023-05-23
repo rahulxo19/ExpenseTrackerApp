@@ -1,44 +1,43 @@
-const express = require('express')
+const express = require("express");
 
-const form = require('../controllers/form')
+const form = require("../controllers/form");
 
-const signup = require('../controllers/users')
+const signup = require("../controllers/users");
 
-const purchase = require('../controllers/purchase')
+const purchase = require("../controllers/purchase");
 
-const password = require('../controllers/forgotPassword')
+const password = require("../controllers/forgotPassword");
 
-const authentication = require('../middleware/auth')
-
+const authentication = require("../middleware/auth");
 
 const router = express.Router();
 
-router.post('/login', signup.login)
+router.post("/login", signup.login);
 
-router.post('/', signup.postUser);
+router.post("/", signup.postUser);
 
-router.get('/premium/leaderboard', authentication.Auth, purchase.leaderboard)
+router.get("/premium/leaderboard", authentication.Auth, purchase.leaderboard);
 
-router.get('/premium', authentication.Auth, purchase.purchaseMembership)
+router.get("/premium", authentication.Auth, purchase.purchaseMembership);
 
-router.post('/updatepremium', authentication.Auth, purchase.updateMembership)
+router.post("/updatepremium", authentication.Auth, purchase.updateMembership);
 
-router.get('/expense', form.getDetail);
+router.get("/expense/prem", authentication.Auth, form.getMemb);
 
-router.get('/user/download', authentication.Auth, form.download);
+router.get("/expense/:desc", authentication.Auth, form.getDetail);
 
-router.post('/password/forgotpassword', password.forgotPassword);
+router.get("/user/download", authentication.Auth, form.download);
 
-router.get('/password/resetpassword/:id', password.resetpassword)
+router.post("/password/forgotpassword", password.forgotPassword);
 
-router.get('/password/updatepassword/:resetpasswordid', password.updatepassword)
+router.get("/password/resetpassword/:id", password.resetpassword);
 
-router.get('/expense/prem', authentication.Auth, form.getMemb);
+router.post("/password/resetpassword/:id", password.updatepassword);
 
-router.get('/expenses', authentication.Auth, form.getDetails);
+router.delete("/expenses/:id", form.delExpense);
 
-router.post('/expenses', authentication.Auth, form.postDetail);
+router.get("/expenses", authentication.Auth, form.getDetails);
 
-router.delete('/expenses', form.delExpense);
+router.post("/expenses", authentication.Auth, form.postDetail);
 
 module.exports = router;
